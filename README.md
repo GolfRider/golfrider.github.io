@@ -1,2 +1,2 @@
 # golfrider.github.io
-My site
+My site: https://golfrider.github.io
