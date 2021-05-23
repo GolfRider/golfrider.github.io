@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>CloudNative Programmer - System Diagrams With GraphViz</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+    <style>
+        nav ul {
+            float: right;
+            list-style-type: none;
+        }
+        nav ul li {
+            float: left;
+            margin-left: 20px;
+        }
+        .top-nav {
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="top-nav">
+    <nav>
+    <ul>
+        <li>
+            <a href="../index.html">Home </a>
+        </li>
+        <li>
+            <a href="about.html">About </a>
+        </li>
+    </ul>
+</nav>
+</div>
+
+<h1 id="system-diagrams">System Diagrams</h1>
+
+<p>Why do we need System Diagram ?</p>
+
+<blockquote>
+<p>We need these diagrams to communicate the design of the system or to understand the system in a more visual way.
+Worded documentation can be useful, but a picture conveys more information in a concise way.</p>
+</blockquote>
+
+<p>System Diagram as a Graph problem ?</p>
+
+<blockquote>
+<p>System diagram typically consists of drawing various components of the system and interconnecting them with lines &amp; arrows.
+Conceptually these can be modelled as a <a href="https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)" rel="nofollow">Graph</a> structure.
+Graphs can be used to represent various components of the system(nodes) and the relationship between them (edges).
+Then the problem becomes a matter of graph visualization.</p>
+</blockquote>
+
+<p>Graphviz - A graph visualization tool</p>
+
+<blockquote>
+<p>Often times drawing pictures manually can be time-consuming or creatively demanding.
+Tools like <code>Graphviz</code> popularize the notion of: <code>diagrams as code/text</code>
+It enables one to draw these diagrams in a much faster way.</p>
+</blockquote>
+
+<h4 id="following-are-some-of-the-tools-in-this-space">Following are some of the tools in this space:</h4>
+
+<ul>
+<li><a href="https://graphviz.org/" rel="nofollow">Graphviz</a></li>
+<li><a href="https://plantuml.com/" rel="nofollow">PlantUML</a></li>
+<li><a href="https://mermaid-js.github.io/mermaid-live-editor" rel="nofollow">Mermaid</a></li>
+<li><a href="https://pikchr.org/home/doc/trunk/homepage.md" rel="nofollow">Pikchr</a></li>
+</ul>
+
+<p>Author of Pikchr describes it much better <a href="https://pikchr.org/home/doc/trunk/doc/purpose.md" rel="nofollow">here</a>:
+<blockquote> The objective is to convey truth, not feeling </blockquote></p>
+
+<p>Here, we shall explore system-diagram generation through <a href="https://graphviz.org/" rel="nofollow">Graphviz</a>.</p>
+
+<h2 id="graphviz">Graphviz</h2>
+
+<blockquote>
+<p>Think of Graphviz as a <code>DSL</code> for graph-visualization. The syntax is somewhat JSON/HCL like.
+We can draw both directed/undirected graphs. We will go with directed-graphs as they are more common here.</p>
+</blockquote>
+
+<h4 id="in-graphviz-there-are-three-main-objects">In Graphviz, there are three main objects:</h4>
+
+<ul>
+<li><code>Graph</code> (Directed / Undirected)</li>
+<li><code>Nodes</code> (have attributes for labels, shapes, color etc)
+
+<ul>
+<li>A special type of node is <code>Record</code> often used for uml class-diagrams</li>
+</ul></li>
+<li><code>Edges</code> (have attributes for labels, color etc)</li>
+<li><code>Clusters</code> (Subgraphs of nodes &amp; edges, can be nested, have attributes)</li>
+</ul>
+
+<p>Graphviz code is expressed in <code>DOT</code> language</p>
+
+<p>Let’s go through a simple example to understand it better:</p>
+
+<pre><code>digraph app1 {
+
+      // edges are represented by an `arrow` symbol
+      A -&gt; { B -&gt; C}  // `A` has an edge to both `B` &amp; `C`
+      B -&gt; D
+
+      // optionally nodes can have style-attributes 
+      A[shape=&#34;box&#34;]
+      B[shape=&#34;circle&#34;]
+      C[shape=&#34;box3d&#34;]
+}
+</code></pre>
+
+<ul>
+<li>In the above code, root element can be either <code>graph</code> or <code>digraph</code> (directed-graph).
+Here we have taken directed-graph.</li>
+<li>Next edges are defined connecting nodes with arrow-symbol.</li>
+<li>Nodes can have arbitrary names.</li>
+<li>Optionally, <code>nodes, edges</code> can be styled with labels, color, shapes etc (similar to css)</li>
+<li>With a few lines of code, now we can generate a reasonably good image shown below.</li>
+</ul>
+
+<p>To generate an image we can use one of the many online editors (<a href="https://edotor.net" rel="nofollow">https://edotor.net</a>) or command-line tool (<a href="https://graphviz.org/download/" rel="nofollow">https://graphviz.org/download/</a>).
+Save the above code to a file with <code>.dot</code> extension. Run this command:</p>
+
+<pre><code> dot -Tsvg file-name.dot &gt; output.svg
+</code></pre>
+
+<p>It generates the following image below: <br/> <br/>
+<img src="./graphviz-app1.svg" alt="App1-Graphviz" width="150" height="200"/></p>
+
+<p>Next, lets take a slightly more complex example:</p>
+
+<pre><code>digraph webapp { // directed graph
+    
+    // left-to-right layout
+    rankdir=&#34;LR&#34;;   
+    
+    // graph properties
+    graph [label=&#34;Sample WebApp Diagram&#34;, nodesep=1, splines=ortho, bgcolor=&#34;#eeeeee&#34;] 
+    
+    // node default attributes
+    node[shape=box3d]  
+    
+    // edge default properties 
+    edge[] 
+    
+
+       // nodes with properties
+       // format: node-name[attr1=value1, attr1=value2]
+       WebServer [label=&#34;NGINX&#34;, fontsize=11, fontcolor=white, fillcolor=&#34;#000080&#34;, style=filled]  
+       ELB [label=&#34;Load Balancer&#34;, fillcolor=&#34;#391463&#34;, fontcolor=white, style=filled]
+       DB [label=&#34;MySQL&#34;, shape=cylinder, style=filled, fillcolor=&#34;#6495ED&#34;]
+       
+       // subgraphs logically group related nodes
+       // subgraphs starting with name `cluster` get a border
+       // subgraphs can be nested
+       subgraph cluster_1 {
+           label = &#34;Client&#34;
+           style=filled; fillcolor=&#34;#1FAFF0&#34;;
+           rank=same // assigns same rank to all nodes in the cluster
+          
+           Mobile[URL=&#34;https://www.google.com&#34; target=&#34;_graphviz&#34;] 
+           Browser
+       }
+
+       subgraph cluster_2 {
+          rank=same
+          label = &#34;Server&#34; 
+          style=filled; fillcolor=&#34;#1FAFF0&#34;;
+          
+          Cache -&gt; API[constraint=false, color=purple];
+          API -&gt; Cache[constraint=false, color=&#34;#777&#34;];
+       }
+
+        // edges: connect the nodes with arrows
+        Browser -&gt; ELB; 
+        Mobile -&gt; ELB-&gt; WebServer -&gt; API -&gt; DB;
+}
+</code></pre>
+
+<p>The above dot example is commented for improved readability.
+It produces an image like below:</p>
+
+<p><img src="./graphviz-app2.svg" alt="App2 image" title="App2-Graphviz"/></p>
+
+<p>As a programmer, it is good to add Graphviz to your toolkit.
+There are many tools &amp; libraries which have <code>graphviz</code> bindings.
+Instead of writing in <code>DOT</code> if you want to write in your preferred language, it may be worth exploring.</p>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/DOT_(graph_description_language)" rel="nofollow">DOT Language</a></li>
+<li><a href="https://www.worthe-it.co.za/blog/2017-09-19-quick-introduction-to-graphviz.html" rel="nofollow">Another Graphviz Tutorial</a></li>
+<li><a href="https://github.com/blushft/go-diagrams" rel="nofollow">System Diagrams with Go</a></li>
+<li><a href="https://github.com/mingrammer/diagrams" rel="nofollow">System Diagrams with Python</a></li>
+</ul>
+
+
+</body>
+</html>
